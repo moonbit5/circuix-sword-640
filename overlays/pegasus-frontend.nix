@@ -35,7 +35,8 @@ final: prev: {
       postPatch = ''
         # Add private headers for EGLFS to CMakeLists.txt
         # These are required by the kms_launch_fix.patch
-        sed -i '/target_link_libraries(pegasus-backend PUBLIC/a \    Qt5::Gui_Private\n    Qt5::EglFsDeviceLib_Private' src/backend/CMakeLists.txt
+        sed -i 's/Qt::Qml/Qt5::Gui_Private Qt5::EglFsDeviceLib_Private Qt::Qml/' src/backend/CMakeLists.txt
+        sed -i '/COMPONENTS/,/)/ s/Qml/Gui EglFsDeviceLib Qml/' src/backend/CMakeLists.txt
       '';
 
       cmakeFlags = [

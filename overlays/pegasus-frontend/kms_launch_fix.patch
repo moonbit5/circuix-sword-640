@@ -74,17 +74,3 @@ index a2d44a79..1e76b401 100644
      ScriptRunner::run(ScriptEvent::PROCESS_FINISHED);
 -    TerminalKbd::disable();
  }
-diff --git a/src/backend/backend.pro b/src/backend/backend.pro
-index c5e62d23..60e2a9c7 100644
---- a/src/backend/backend.pro
-+++ b/src/backend/backend.pro
-@@ -12,6 +12,9 @@ isEmpty(USE_SDL_GAMEPAD): QT += gamepad
- msvc: DEFINES *= _USE_MATH_DEFINES
-
-
-+QT += gui-private eglfsdeviceintegration-private
-+
-+
- SOURCES += \
-     Backend.cpp \
-     FrontendLayer.cpp \
