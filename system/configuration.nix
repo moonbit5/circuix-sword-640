@@ -131,6 +131,7 @@
           fi
 
           # Start attractplus
+          export SDL_VIDEODRIVER=drm
           exec ${pkgs.attractplus}/bin/attractplus
         '';
       };
