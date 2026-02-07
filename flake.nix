@@ -29,6 +29,12 @@
       flake = false;
     };
 
+    attractplus-src = {
+      url = "github:oomek/attractplus";
+      flake = false;
+      submodules = true;
+    };
+
     arduino-nix.url = "github:bouk/arduino-nix";
 
     arduino-index = {
@@ -44,6 +50,7 @@
     , ovmerge-src
     , rpifirmware
     , retroarch-src
+    , attractplus-src
     , arduino-nix
     , arduino-index
     , ...
@@ -64,6 +71,7 @@
         system = "aarch64-linux";
         # Turn this on if you need to flash the arduino firmware
         specialArgs.withFlashCSFirmware = false;
+        specialArgs.withAttractMode = false;
 
         modules = [
           ({ config, modulesPath, pkgs, ... }:
@@ -97,6 +105,7 @@
                   (import ./overlays/mesa.nix)
                   (import ./overlays/ovmerge.nix ovmerge-src)
                   (import ./overlays/retroarch.nix retroarch-src)
+                  (import ./overlays/attractplus.nix attractplus-src)
                   (import ./overlays/rtl8723-firmware.nix)
                   (import ./overlays/uboot.nix)
                   (import ./overlays/wiringpi)
