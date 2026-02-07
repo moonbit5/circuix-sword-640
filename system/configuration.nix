@@ -1,4 +1,4 @@
-{ lib, pkgs, withFlashCSFirmware, ... }:
+{ lib, pkgs, withFlashCSFirmware, withAttractMode, ... }:
 {
   nixpkgs = {
     # For fbneo
@@ -42,6 +42,7 @@
       "networkmanager"
       # To be able to use the frame buffer
       "video"
+      "render"
       # Enable ‘sudo’ for the user.
       "wheel"
     ];
@@ -57,7 +58,8 @@
     pkgs.retroarch
     pkgs.vim
     pkgs.wiringpi
-  ] ++ lib.lists.optional withFlashCSFirmware pkgs.flash-cs-firmware;
+  ] ++ lib.lists.optional withFlashCSFirmware pkgs.flash-cs-firmware
+  ++ lib.lists.optional withAttractMode pkgs.attractplus;
 
   services = {
     dbus.implementation = "broker";
@@ -90,6 +92,7 @@
 
     retroarch = {
       description = "retroarch Service";
+      enable = !withAttractMode;
       wantedBy = [ "multi-user.target" ];
       path = [
         pkgs.gawk
@@ -111,6 +114,26 @@
         '';
       };
       environment = { CS_HUD_SOCKET = "/tmp/cs-hud.sock"; };
+    };
+
+    attractplus = {
+      description = "Attract-Mode Plus Service";
+      enable = withAttractMode;
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        User = "pi";
+        ExecStart = pkgs.writeShellScript "start-attractplus.sh" ''
+          # Bootstrap the config if it does not exist
+          if [ ! -d ~/.attract ]; then
+            mkdir -p ~/.attract
+            cp -r ${pkgs.attractplus}/share/attractplus/* ~/.attract/
+            chmod u+w -R ~/.attract
+          fi
+
+          # Start attractplus
+          exec ${pkgs.attractplus}/bin/attractplus
+        '';
+      };
     };
   };
 
