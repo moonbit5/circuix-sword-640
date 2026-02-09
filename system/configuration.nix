@@ -1,4 +1,4 @@
-{ lib, pkgs, withFlashCSFirmware, ... }:
+{ lib, pkgs, withFlashCSFirmware, withPegasusFE, ... }:
 {
   nixpkgs = {
     # For fbneo
@@ -57,7 +57,8 @@
     pkgs.retroarch
     pkgs.vim
     pkgs.wiringpi
-  ] ++ lib.lists.optional withFlashCSFirmware pkgs.flash-cs-firmware;
+  ] ++ lib.lists.optional withFlashCSFirmware pkgs.flash-cs-firmware
+  ++ lib.lists.optional withPegasusFE pkgs.pegasus-frontend;
 
   services = {
     dbus.implementation = "broker";
@@ -90,6 +91,7 @@
 
     retroarch = {
       description = "retroarch Service";
+      enable = !withPegasusFE;
       wantedBy = [ "multi-user.target" ];
       path = [
         pkgs.gawk
@@ -111,6 +113,29 @@
         '';
       };
       environment = { CS_HUD_SOCKET = "/tmp/cs-hud.sock"; };
+    };
+
+    pegasus-fe = {
+      description = "pegasus-fe Service";
+      enable = withPegasusFE;
+      wantedBy = [ "multi-user.target" ];
+      path = [
+        pkgs.gawk
+        pkgs.networkmanager
+        pkgs.pegasus-frontend
+        pkgs.retroarch
+      ];
+      serviceConfig = {
+        User = "pi";
+        ExecStart = pkgs.writeShellScript "start-pegasus.sh" ''
+          # Start pegasus
+          exec ${pkgs.pegasus-frontend}/bin/pegasus-fe
+        '';
+      };
+      environment = {
+        CS_HUD_SOCKET = "/tmp/cs-hud.sock";
+        QT_QPA_PLATFORM = "eglfs";
+      };
     };
   };
 

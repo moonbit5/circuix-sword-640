@@ -64,6 +64,9 @@
         system = "aarch64-linux";
         # Turn this on if you need to flash the arduino firmware
         specialArgs.withFlashCSFirmware = false;
+        # Turn this on to use pegasus-frontend instead of retroarch as the
+        # default frontend
+        specialArgs.withPegasusFE = false;
 
         modules = [
           ({ config, modulesPath, pkgs, ... }:
@@ -96,6 +99,7 @@
                   (import ./overlays/flash-cs-firmware.nix)
                   (import ./overlays/mesa.nix)
                   (import ./overlays/ovmerge.nix ovmerge-src)
+                  (import ./overlays/pegasus-frontend.nix)
                   (import ./overlays/retroarch.nix retroarch-src)
                   (import ./overlays/rtl8723-firmware.nix)
                   (import ./overlays/uboot.nix)
